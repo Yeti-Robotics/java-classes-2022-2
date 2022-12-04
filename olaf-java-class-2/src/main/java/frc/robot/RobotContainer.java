@@ -9,11 +9,16 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.commands.IntakeAllInCommand;
+import frc.robot.commands.IntakeAllOutCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
-
+import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 
 /**
@@ -29,6 +34,8 @@ public class RobotContainer
     
     private final ExampleCommand autoCommand = new ExampleCommand(exampleSubsystem);
     private final DrivetrainSubsystem drivetrainSubsystem;
+    private final IntakeSubsystem intakeSubsystem;
+    private final ShooterSubsystem shooterSubsystem;
     private final Joystick driverstation;
     
     
@@ -37,6 +44,8 @@ public class RobotContainer
     {
         drivetrainSubsystem = new DrivetrainSubsystem();
         driverstation = new Joystick(0);
+        intakeSubsystem = new IntakeSubsystem();
+        shooterSubsystem = new ShooterSubsystem();
 
         drivetrainSubsystem.setDefaultCommand(
             new RunCommand(
@@ -54,10 +63,32 @@ public class RobotContainer
      */
     private void configureButtonBindings()
     {
-        // Add button to command mappings here.
-        // See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
+        new JoystickButton(driverstation, 1).whileHeld(new IntakeAllInCommand(intakeSubsystem));
+        new JoystickButton(driverstation, 6).whileHeld(new IntakeAllOutCommand(intakeSubsystem));
+
+        new JoystickButton(driverstation, 11)
+            .whenPressed(new InstantCommand(
+                () -> intakeSubsystem.extend(),
+                intakeSubsystem
+            ));
+        new JoystickButton(driverstation, 12)
+            .whenPressed(new InstantCommand(
+                () -> intakeSubsystem.retract(),
+                intakeSubsystem
+            ));
+
+        new JoystickButton(driverstation, 2)
+            .whenPressed(new InstantCommand(
+                () -> shooterSubsystem.spinFlywheel(0.6),
+                shooterSubsystem
+            ));
+        new JoystickButton(driverstation, 7)
+            .whenPressed(new InstantCommand(
+                () -> shooterSubsystem.stopFlywheel(),
+                shooterSubsystem
+            ));
     }
-    
+
     
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
