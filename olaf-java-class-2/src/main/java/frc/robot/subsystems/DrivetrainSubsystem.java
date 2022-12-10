@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DrivetrainSubsystem extends SubsystemBase {
-    private WPI_TalonFX leftMotor1, leftMotor2, rightMotor1, rightMotor2;
-    private DifferentialDrive differentialDrive;
+    private final WPI_TalonFX leftMotor1, leftMotor2, rightMotor1, rightMotor2;
+    private final DifferentialDrive differentialDrive;
 
     public DrivetrainSubsystem() {
         leftMotor1 = new WPI_TalonFX(1);
@@ -18,7 +18,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         differentialDrive = new DifferentialDrive(leftMotor1, rightMotor1);
         differentialDrive.setDeadband(0.05);
 
-        leftMotor1.setInverted(true);
+        leftMotor1.setInverted(false);
         rightMotor1.setInverted(true);
 
         leftMotor2.follow(leftMotor1);

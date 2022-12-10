@@ -8,10 +8,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.DriveForwardCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeAllInCommand;
 import frc.robot.commands.IntakeAllOutCommand;
@@ -32,7 +31,7 @@ public class RobotContainer
     // The robot's subsystems and commands are defined here...
     private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
     
-    private final ExampleCommand autoCommand = new ExampleCommand(exampleSubsystem);
+    private Command autoCommand;
     private final DrivetrainSubsystem drivetrainSubsystem;
     private final IntakeSubsystem intakeSubsystem;
     private final ShooterSubsystem shooterSubsystem;
@@ -49,7 +48,7 @@ public class RobotContainer
 
         drivetrainSubsystem.setDefaultCommand(
             new RunCommand(
-                () -> drivetrainSubsystem.tankDrive(driverstation.getRawAxis(0), -driverstation.getRawAxis(2)), drivetrainSubsystem));
+                () -> drivetrainSubsystem.tankDrive(-driverstation.getRawAxis(0), driverstation.getRawAxis(2)), drivetrainSubsystem));
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -97,7 +96,29 @@ public class RobotContainer
      */
     public Command getAutonomousCommand()
     {
-        // An ExampleCommand will run in autonomous
+        autoCommand = new SequentialCommandGroup(
+            new InstantCommand(
+                () -> intakeSubsystem.extend(),
+                intakeSubsystem
+            ),
+            new IntakeAllInCommand(intakeSubsystem).withTimeout(5.0).
+                alongWith(new DriveForwardCommand(drivetrainSubsystem, 5.0)),
+            new InstantCommand(
+                () -> shooterSubsystem.spinFlywheel(0.85),
+                shooterSubsystem
+            ),
+            new WaitCommand(1.0),
+            new InstantCommand(
+                () -> intakeSubsystem.retract(),
+                intakeSubsystem
+            ),
+            new IntakeAllInCommand(intakeSubsystem).withTimeout(5.0),
+            new InstantCommand(
+                () -> shooterSubsystem.stopFlywheel(),
+                shooterSubsystem
+            )
+        );
+
         return autoCommand;
     }
 }

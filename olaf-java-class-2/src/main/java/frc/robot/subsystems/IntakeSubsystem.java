@@ -13,13 +13,17 @@ public class IntakeSubsystem extends SubsystemBase {
     private final VictorSPX conveyorMotor;
     private final VictorSPX intakeMotor;
 
+    private final VictorSPX pinchMotor;
     public IntakeSubsystem() {
         this.intakePiston = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 7, 0);
         this.conveyorMotor = new VictorSPX(9);
         this.intakeMotor = new VictorSPX(8);
+        this.pinchMotor = new VictorSPX(7);
+
 
         intakeMotor.setInverted(true);
         conveyorMotor.setInverted(true);
+        pinchMotor.setInverted(false);
 
         retract();
     }
@@ -48,9 +52,17 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.set(ControlMode.PercentOutput, Math.copySign(speed, -1.0));
     }
 
+    public void spinPinchIn(double speed) {
+        pinchMotor.set(ControlMode.PercentOutput, Math.abs(speed));
+    }
+
+    public void spinPinchOut(double speed) {
+        pinchMotor.set(ControlMode.PercentOutput, -Math.abs(speed));
+    }
     public void stopMotors() {
         conveyorMotor.set(ControlMode.PercentOutput, 0.0);
         intakeMotor.set(ControlMode.PercentOutput, 0.0);
+        pinchMotor.set(ControlMode.PercentOutput, 0.0);
     }
 }
 

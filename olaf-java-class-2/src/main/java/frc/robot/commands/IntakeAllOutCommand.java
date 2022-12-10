@@ -18,6 +18,7 @@ public class IntakeAllOutCommand extends CommandBase {
     public void initialize() {
         intakeSubsystem.spinIntakeOut(-0.3);
         intakeSubsystem.spinConveyorOut(-0.3);
+        intakeSubsystem.spinPinchOut(-0.3);
     }
 
     @Override

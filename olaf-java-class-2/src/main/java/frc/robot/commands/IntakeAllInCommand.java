@@ -17,6 +17,7 @@ public class IntakeAllInCommand extends CommandBase {
     public void initialize() {
         intakeSubsystem.spinIntakeIn(0.3);
         intakeSubsystem.spinConveyorIn(0.3);
+        intakeSubsystem.spinPinchIn(0.3);
     }
 
     @Override
